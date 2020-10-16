@@ -1,11 +1,13 @@
 package id.dana.spark.odps
 
 import org.apache.spark.sql.SparkSession
+import org.apache.log4j.{Level, LogManager, PropertyConfigurator}
 
 import scala.math.random
 
 object SparkPi {
   def main(args: Array[String]): Unit = {
+    val log = LogManager.getRootLogger
     val spark = SparkSession
       .builder()
       .appName("SparkPi")
@@ -20,7 +22,7 @@ object SparkPi {
         val y = random * 2 - 1
         if (x * x + y * y < 1) 1 else 0
       }.reduce(_ + _)
-      println("Pi is roughly " + 4.0 * count / n)
+      log.info("Pi is roughly " + 4.0 * count / n)
     } finally {
       sc.stop()
     }

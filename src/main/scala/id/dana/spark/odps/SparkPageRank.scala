@@ -1,5 +1,6 @@
 package id.dana.spark.odps
 
+import org.apache.log4j.LogManager
 import org.apache.spark.sql.SparkSession
 
 /**
@@ -37,6 +38,7 @@ object SparkPageRank {
 
     showWarning()
 
+    val log = LogManager.getRootLogger
     val spark = SparkSession
       .builder
       .appName("Spark Page Rank")
@@ -59,7 +61,7 @@ object SparkPageRank {
     }
 
     val output = ranks.collect()
-    output.foreach(tup => println(s"${tup._1} has rank:  ${tup._2} ."))
+    output.foreach(tup => log.info(s"${tup._1} has rank:  ${tup._2} ."))
 
     spark.stop()
   }
