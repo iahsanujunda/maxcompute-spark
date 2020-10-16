@@ -1,6 +1,7 @@
 package id.dana.spark.odps
 
 import org.apache.spark.sql.SparkSession
+
 import scala.math.random
 
 object SparkPi {
