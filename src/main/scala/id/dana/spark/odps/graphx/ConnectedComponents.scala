@@ -8,37 +8,26 @@ object ConnectedComponents {
     val spark = SparkSession
       .builder()
       .appName("Connected Components GraphX")
-      .config("spark.executor.memory", "8g")
       .getOrCreate()
     val sc = spark.sparkContext
 
-    val users = (sc.textFile("src/main/resources/users.txt")
-      .map(line => line.split(",")).map( parts => (parts.head.toLong, parts.tail) ))
+    // Load the graph as in the PageRank example
+    val graph = GraphLoader.edgeListFile(sc, "src/main/resources/followers.txt")
 
-    // Parse the edge data which is already in userId -> userId format
-    val followerGraph = GraphLoader.edgeListFile(sc, "src/main/resources/followers.txt")
+    // Find the connected components
+    val cc = graph.connectedComponents().vertices
 
-    // Load the graph
-    val graph = followerGraph.outerJoinVertices(users) {
-      case (uid, deg, Some(attrList)) => attrList
-      // Some users may not have attributes so we set them as empty
-      case (uid, deg, None) => Array.empty[String]
+    // Join the connected components with the usernames
+    val users = sc.textFile("src/main/resources/users.txt").map { line =>
+      val fields = line.split(",")
+      (fields(0).toLong, fields(1))
     }
-
-    // Restrict the graph to users with usernames and names
-    val subgraph = graph.subgraph(vpred = (vid, attr) => attr.size == 2)
-
-    // Compute the PageRank
-    val pagerankGraph = subgraph.pageRank(0.001)
-
-    // Get the attributes of the top pagerank users
-    val userInfoWithPageRank = subgraph.outerJoinVertices(pagerankGraph.vertices) {
-      case (uid, attrList, Some(pr)) => (pr, attrList.toList)
-      case (uid, attrList, None) => (0.0, attrList.toList)
+    val ccByUsername = users.join(cc).map {
+      case (id, (username, cc)) => (username, cc)
     }
 
     // Print the result
-    println(userInfoWithPageRank.vertices.top(5)(Ordering.by(_._2._1)).mkString("\n"))
+    println(ccByUsername.collect().mkString("\n"))
 
     spark.stop()
   }
