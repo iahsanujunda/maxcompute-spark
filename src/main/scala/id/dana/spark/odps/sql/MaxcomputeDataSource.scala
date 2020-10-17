@@ -17,7 +17,7 @@ object MaxcomputeDataSource {
     val tableName = "ods_people"
 
     prepareRecources(spark, tableName)
-    retrieveData(spark, tableName)
+    analyzeData(spark, tableName)
 
     // Lest we forget!!!
     spark.stop()
@@ -28,16 +28,19 @@ object MaxcomputeDataSource {
     spark.sql(s"DROP TABLE IF EXISTS $odpsResource")
     spark.sql(s"CREATE TABLE $odpsResource (name STRING, age INT, job STRING)")
 
-    // Read files
-    val peopleRDD = spark.sparkContext.textFile("src/main/resources/people.csv")
-    val schemaString = "name age job"
+    // Read files and drop header
+    val rdd = spark.sparkContext.textFile("src/main/resources/people.csv")
+    val peopleRDD = rdd.mapPartitionsWithIndex{
+      (idx, iter) => if (idx == 0) iter.drop(1) else iter
+    }
 
-    // Generate the schema based on the string of schema
+    // Prepare schema
+    val schemaString = "name age job"
     val fields = schemaString.split(" ")
       .map(fieldName => StructField(fieldName, StringType, nullable = true))
     val schema = StructType(fields)
 
-    // Generate RDD-based data
+    // Generate RDD data
     val rowRDD = peopleRDD
       .map(_.split(";"))
       .map(attributes => Row(attributes(0).trim, attributes(1).trim, attributes(2).trim))
@@ -50,8 +53,29 @@ object MaxcomputeDataSource {
     peopleDf.write.insertInto(odpsResource)
   }
 
-  private def retrieveData(spark: SparkSession, odpsResource: String): Unit = {
-    val result_df = spark.sql(s"select * from $odpsResource")
-    result_df.show(10)
+  private def analyzeData(spark: SparkSession, odpsResource: String): Unit = {
+    // select
+    val sql_df = spark.sql(s"select * from $odpsResource")
+    println("====================================")
+    println("|             Schema               |")
+    println("====================================")
+    sql_df.printSchema()
+
+    println("====================================")
+    println("|           Full Table             |")
+    println("====================================")
+    sql_df.show(10)
+
+    // filter
+    println("====================================")
+    println("|             Filter               |")
+    println("====================================")
+    sql_df.filter("age >= 25").show()
+
+    // aggregate
+    println("=====================================")
+    println("|           Aggregate               |")
+    println("=====================================")
+    sql_df.groupBy("job").count().show()
   }
 }

@@ -1,7 +1,7 @@
 # Apache Spark on Alibaba Cloud Maxcompute
 
 <p align="center">
-<img src="https://github.com/apache/spark/blob/master/docs/img/spark-logo-hd.png" width="60%" alt="Apache Spark" />
+<img src="./docs/img/spark-white.png" width="60%" alt="Apache Spark" />
 </p>
 
 Spark on MaxCompute is a computing service provided by MaxCompute. It is compatible with the open-source Spark. It provides a Spark computing framework based on unified computing resources and a dataset permission system, which allows you to submit and run Spark jobs in your preferred development method. Spark on MaxCompute can fulfill the diverse needs of data processing and analysis.<sup>1</sup>
