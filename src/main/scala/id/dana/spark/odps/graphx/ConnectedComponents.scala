@@ -12,14 +12,33 @@ object ConnectedComponents {
       .getOrCreate()
     val sc = spark.sparkContext
 
-    // Load the graph
-    val graph = GraphLoader.edgeListFile(sc, "src/main/resources/twitter-short.txt")
+    val users = (sc.textFile("src/main/resources/users.txt")
+      .map(line => line.split(",")).map( parts => (parts.head.toLong, parts.tail) ))
 
-    // Find the connected components
-    val cc = graph.connectedComponents().vertices
+    // Parse the edge data which is already in userId -> userId format
+    val followerGraph = GraphLoader.edgeListFile(sc, "src/main/resources/followers.txt")
+
+    // Load the graph
+    val graph = followerGraph.outerJoinVertices(users) {
+      case (uid, deg, Some(attrList)) => attrList
+      // Some users may not have attributes so we set them as empty
+      case (uid, deg, None) => Array.empty[String]
+    }
+
+    // Restrict the graph to users with usernames and names
+    val subgraph = graph.subgraph(vpred = (vid, attr) => attr.size == 2)
+
+    // Compute the PageRank
+    val pagerankGraph = subgraph.pageRank(0.001)
+
+    // Get the attributes of the top pagerank users
+    val userInfoWithPageRank = subgraph.outerJoinVertices(pagerankGraph.vertices) {
+      case (uid, attrList, Some(pr)) => (pr, attrList.toList)
+      case (uid, attrList, None) => (0.0, attrList.toList)
+    }
 
     // Print the result
-    println(cc.collect().mkString("\n"))
+    println(userInfoWithPageRank.vertices.top(5)(Ordering.by(_._2._1)).mkString("\n"))
 
     spark.stop()
   }
