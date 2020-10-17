@@ -6,7 +6,7 @@
 
 > The term ODPS is former name of a service that now becomes Maxcompute, this document will try to use Maxcompute for consistency, but some technical parts still uses ODPS
 
-Spark on MaxCompute is a computing service provided by MaxCompute. It is compatible with the open-source Spark. It provides a Spark computing framework based on unified computing resources and a dataset permission system, which allows you to submit and run Spark jobs in your preferred development method. Spark on MaxCompute can fulfill the diverse needs of data processing and analysis.<sup>1</sup>
+Spark on MaxCompute is a computing service provided by Alibaba Cloud. It is compatible with the open-source Spark. It provides a Spark computing framework based on unified computing resources and a dataset permission system, which allows you to submit and run Spark jobs in your preferred development method. Spark on MaxCompute can fulfill the diverse needs of data processing and analysis.<sup>1</sup>
 
 In this repo, some common Spark operations is implemented, such as RDD, DataFrame, SparkSQL and MlLib, as well as some Maxcompute-specific operations such as ![Maxcompute](https://www.alibabacloud.com/product/maxcompute) (big data platform - not unlike bigquery or redshift), ![OSS](https://www.alibabacloud.com/product/oss) (object storage), and ![Dataworks](https://www.alibabacloud.com/product/ide) (unified orchestrator - airflow, if you may) 
 
