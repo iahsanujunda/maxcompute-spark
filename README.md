@@ -10,13 +10,13 @@ In this repo, some common Spark operations is implemented, such as RDD, DataFram
 
 ## Local Environment Setup
 
-To develop Spark on Maxcompute projects, we need to setup local development environment. The easiest way to do this is via ![Maxcompute Studio](https://plugins.jetbrains.com/plugin/9193-maxcompute-studio), an Intellij IDEA plugin. However, those without IntelliJ IDEA can still setup their own development environment.
+To develop Spark on Maxcompute projects, a local development environment need to be set up. The easiest way to do this is via ![Maxcompute Studio](https://plugins.jetbrains.com/plugin/9193-maxcompute-studio), an Intellij IDEA plugin. However, those without IntelliJ IDEA can still setup their own development environment. The following sections will show how.
 
 #### 1. Requirements
 
 * ![Spark on Maxcompute Client](http://odps-repo.oss-cn-hangzhou.aliyuncs.com/spark/2.3.0-odps0.32.2/spark-2.3.0-odps0.32.2.tar.gz?spm=a2c63.p38356.879954.7.40c173fbZZW5Iw&file=spark-2.3.0-odps0.32.2.tar.gz), extract it and remember the extracted path
-* Java 1.8
-* Maven
+* Install Java 1.8
+* Install ![Apache Maven](https://maven.apache.org/)
 
 #### 2. Set environment variables
 
@@ -31,7 +31,7 @@ make sure to run `source ~/.bash_profile` from your terminal to load the environ
 
 #### 3. Configure the spark-defaults.conf file
 
-Go to `$SPARK_HOME/conf` directory. In there, a `spark-defaults.conf.template` file can be found. Copy this file and rename it to `spark-defaults.conf`. Open the .conf file to setup our Maxcompute configuration.
+Go to `$SPARK_HOME/conf` directory. In there, a `spark-defaults.conf.template` file can be found. Copy this file and rename it to `spark-defaults.conf`. Spark on Maxcompute client can be configured in this file.
 
 ````shell script
 # spark-defaults.conf
@@ -41,7 +41,7 @@ spark.hadoop.odps.access.id = XXX     # alibaba cloud account access id
 spark.hadoop.odps.access.key = XXX    # alibaba cloud account access key
 
 # Retain the following default settings.
-Spark.hadoop.odps.end.point = http://service.cn.maxcompute.aliyun.com/api # Find corrent engpoints based on your maxcompute project region from: https://www.alibabacloud.com/help/doc-detail/34951.htm
+Spark.hadoop.odps.end.point = http://service.cn.maxcompute.aliyun.com/api # Find correct endpoints based on your maxcompute project region from: https://www.alibabacloud.com/help/doc-detail/34951.htm
 spark.hadoop.odps.runtime.end.point = http://service.cn.maxcompute.aliyun-inc.com/api # Generally same as above
 spark.sql.catalogImplementation=odps
 spark.hadoop.odps.task.major.version = cupid_v2
@@ -56,17 +56,17 @@ For some functions, additional configuration might be needed. Refer to ![this do
 
 #### 4. Clone this repository
 
-This simplest way is to run:
+The simplest way is to run:
 
 ````shell script
 git clone https://github.com/iahsanujunda/maxcompute-spark.git
 ````
 
-from your terminal.
+from the terminal.
 
 ## Building Package
 
-This project is bootstrapped using ![Apache Maven](https://maven.apache.org/). To build this project, run:
+Thanks to maven, all build process is already streamlined. simply run:
 
 ````shell script
 mvn clean package
@@ -76,11 +76,11 @@ This will resolve all dependencies, package a .jar executable, as well as run te
 
 ## Running Spark Programs on Maxcompute
 
-To run your local development environment, Maxcompute provides two modes: Local-mode and Cluster-mode
+To run local development environment, Maxcompute provides two running mode: Local-mode and Cluster-mode
 
 #### Local Mode
 
-In this mode, Spark on Maxcompute client runs on the local machine but make use of Tunnel to read and write data to your Maxcompute resources. In this mode, take a note on `local[N]` part, `N` indicates the number of CPU to be used by the client.
+In this mode, Spark on Maxcompute client runs on the local machine but make use of Tunnel to read and write data to Maxcompute resources. Take a note on `local[N]` part, `N` indicates the number of CPU to be used by the client.
 
 To execute, run:
 
@@ -92,7 +92,7 @@ ${path to project directory}/target/maxcompute-spark-1.0-SNAPSHOT.jar
 
 #### Cluster Mode
 
-With cluster mode, the Spark program is run on the Maxcompute clusters, therefore take a note that this mode will need to upload the resource files to the Maxcompute cluster. It might take longer for this mode to finish compared to local mode, based on the internet connection. However, this mode will reflect the actual environment that the code will face on production environment.
+With cluster mode, the Spark program is run on the Maxcompute clusters, note that this means resource files will need to be uploaded to the Maxcompute clusters. Therefore, it might take longer for this mode to execute compared to local mode, based on the internet connection. However, this mode will reflect the actual environment that the code will face on production environment.
 
 To execute, run:
 
