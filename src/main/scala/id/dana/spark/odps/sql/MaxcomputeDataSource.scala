@@ -1,10 +1,12 @@
 package id.dana.spark.odps.sql
 
-import org.apache.spark.sql.Row
-import org.apache.spark.sql.SparkSession
+import org.apache.log4j.{LogManager, Logger}
+import org.apache.spark.sql.{AnalysisException, Row, SparkSession}
 import org.apache.spark.sql.types._
 
 object MaxcomputeDataSource {
+  val log: Logger = LogManager.getRootLogger
+
   def main(args: Array[String]): Unit = {
     val spark = SparkSession
       .builder()
@@ -29,7 +31,13 @@ object MaxcomputeDataSource {
     spark.sql(s"CREATE TABLE $odpsResource (name STRING, age INT, job STRING)")
 
     // Read files and drop header
-    val rdd = spark.sparkContext.textFile("src/main/resources/people.csv")
+    var rdd = spark.sparkContext.emptyRDD[String]
+    try {
+      rdd = spark.sparkContext.textFile("src/main/resources/people.csv")
+    } catch {
+      case _: AnalysisException => log.error("File not found")
+      case ex: Exception => log.error(ex.getMessage)
+    }
     val peopleRDD = rdd.mapPartitionsWithIndex{
       (idx, iter) => if (idx == 0) iter.drop(1) else iter
     }
