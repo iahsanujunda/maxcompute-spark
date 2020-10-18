@@ -18,14 +18,14 @@ object MaxcomputeDataSource {
     val project = spark.conf.get("odps.project.name")
     val tableName = "ods_people"
 
-    prepareRecources(spark, tableName)
+    prepareResources(spark, tableName)
     analyzeData(spark, tableName)
 
     // Lest we forget!!!
     spark.stop()
   }
 
-  private def prepareRecources(spark: SparkSession, odpsResource: String): Unit = {
+  private def prepareResources(spark: SparkSession, odpsResource: String): Unit = {
     // Drop Create
     spark.sql(s"DROP TABLE IF EXISTS $odpsResource")
     spark.sql(s"CREATE TABLE $odpsResource (name STRING, age INT, job STRING)")
