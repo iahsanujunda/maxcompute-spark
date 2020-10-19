@@ -12,7 +12,7 @@ object MaxcomputeDataSource {
       .builder()
       .appName("SparkSQL-on-MaxCompute")
       .config("spark.sql.broadcastTimeout", 20 * 60)
-      .config("spark.sql.crossJoin.enabled", false)
+      .config("spark.sql.crossJoin.enabled", value = false)
       .config("spark.sql.catalogImplementation", "odps")
       .getOrCreate()
     val project = spark.conf.get("odps.project.name")
